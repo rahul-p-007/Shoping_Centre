@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
+import paymentsRoutes from "./routes/payment.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 
 import { connectDB } from "./db/connect/db_connection.js";
@@ -17,5 +18,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/coupon", couponRoutes);
+app.use("/api/payments", paymentsRoutes);
 
 connectDB(app);
