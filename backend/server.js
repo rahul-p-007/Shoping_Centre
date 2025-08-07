@@ -5,6 +5,7 @@ import productsRoutes from "./routes/products.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import paymentsRoutes from "./routes/payment.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
+import analyticsRoutes from "./routes/analytics.routes.js";
 
 import { connectDB } from "./db/connect/db_connection.js";
 import cookieParser from "cookie-parser";
@@ -19,5 +20,6 @@ app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/coupon", couponRoutes);
 app.use("/api/payments", paymentsRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 connectDB(app);
