@@ -1,7 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
+import {
+  UserPlus,
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Loader,
+  Eye,
+} from "lucide-react";
 import { motion } from "framer-motion";
+import { useUserStore } from "../store/useUserStore";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -12,8 +21,9 @@ const SignUpPage = () => {
   });
 
   const [passwordError, setPasswordError] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const loading = false;
+  const { signup, user } = useUserStore();
 
   const validatePassword = (password) => {
     if (!/[A-Z]/.test(password))
@@ -29,7 +39,6 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const error = validatePassword(formData.password);
     if (error) {
       setPasswordError(error);
@@ -50,6 +59,7 @@ const SignUpPage = () => {
       confirmPassword: "",
     });
     setPasswordError("");
+    signup(formData);
   };
 
   return (
@@ -143,7 +153,7 @@ const SignUpPage = () => {
                 </div>
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={(e) => {
@@ -152,6 +162,10 @@ const SignUpPage = () => {
                   }}
                   className="block w-full px-3 py-2 pl-10 bg-white border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                   placeholder="••••••••"
+                />
+                <Eye
+                  className="absolute right-3 top-2.5 cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
             </div>
@@ -170,7 +184,7 @@ const SignUpPage = () => {
                 </div>
                 <input
                   id="confirmPassword"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
                   onChange={(e) =>
@@ -181,6 +195,10 @@ const SignUpPage = () => {
                   }
                   className="block w-full px-3 py-2 pl-10 bg-white border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                   placeholder="••••••••"
+                />
+                <Eye
+                  className="cursor-pointer absolute top-2.5 right-3"
+                  onClick={() => setShowPassword(!showPassword)}
                 />
               </div>
             </div>
