@@ -1,11 +1,11 @@
 import Product from "../db/models/product.model.js";
 import cloudinary from "../lib/cloudinary.js";
-
+import { redis } from "../lib/redis.js";
 export const getAllproducts = async (req, res) => {
   try {
-    const product = await Product.find({});
+    const products = await Product.find({});
 
-    res.json({ product });
+    res.json({ products });
   } catch (error) {
     console.log("get all products error", error.message);
     res.status(500).json({
@@ -17,7 +17,7 @@ export const getAllproducts = async (req, res) => {
 export const getfeaturedproducts = async (req, res) => {
   try {
     // const getFeaturedProducts = await Product
-    let featuredProducts = await Redis.get("featured_products");
+    let featuredProducts = await redis.get("featured_products");
     if (featuredProducts) {
       return res.json(JSON.parse(featuredProducts));
     }
@@ -41,26 +41,33 @@ export const getfeaturedproducts = async (req, res) => {
     });
   }
 };
-
 export const createProduct = async (req, res) => {
   try {
     const { name, description, price, image, category } = req.body;
     let cloudinaryResponse = null;
+
     if (image) {
-      await cloudinary.uploader.upload(image, { folder: "products" });
+      // store the upload result in cloudinaryResponse
+      cloudinaryResponse = await cloudinary.uploader.upload(image, {
+        folder: "products",
+      });
     }
+
     const product = await Product.create({
       name,
       description,
       price,
-      image: cloudinaryResponse?.secure_url
-        ? cloudinaryResponse?.secure_url
-        : "",
+      image: cloudinaryResponse?.secure_url || "",
       category,
     });
-    res.status(201).json(product);
+
+    res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      product,
+    });
   } catch (error) {
-    console.log("create product error", error.message);
+    console.error("create product error", error.message);
     res.status(500).json({
       message: "Server error",
       error: error.message,

@@ -37,7 +37,10 @@ function Navbar() {
               </Link>
             )}
             {isAdmin && (
-              <Link className="bg-emerald-500 text-white px-3 py-1 rounded-md hover:bg-emerald-600 transition-colors duration-300 ease-in-out font-medium flex items-center">
+              <Link
+                className="bg-emerald-500 text-white px-3 py-1 rounded-md hover:bg-emerald-600 transition-colors duration-300 ease-in-out font-medium flex items-center"
+                to={"/secret-dashboard"}
+              >
                 <Lock className="inline-block mr-1 " size={18} />
                 <span className="hidden sm:inline">Dashboard</span>
               </Link>
