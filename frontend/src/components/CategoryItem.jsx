@@ -19,12 +19,12 @@ const CategoryItem = ({ category, index }) => {
       }}
     >
       <Link to={"/category" + category.href}>
-        <div className="w-full h-full cursor-pointer">
+        <div className="w-full h-full cursor-pointer rounded-lg border border-gray-700 p-3">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-50 z-10" />
           <motion.img
             src={category.imageUrl}
             alt={category.name}
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110 rounded-lg"
             loading="lazy"
             initial={{ scale: 1.05 }}
             animate={{ scale: 1 }}

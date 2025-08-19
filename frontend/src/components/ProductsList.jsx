@@ -53,10 +53,10 @@ const ProductsList = () => {
 
         <tbody className="bg-gray-800 divide-y divide-gray-700">
           {products?.map((product) => (
-            <tr key={product._id} className="hover:bg-gray-700">
+            <tr key={product._id} className="hover:bg-gray-700 ">
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 h-10 w-10">
+                  <div className="flex-shrink-0 h-10 w-10 ">
                     <img
                       className="h-10 w-10 rounded-full object-cover"
                       src={product.image}
