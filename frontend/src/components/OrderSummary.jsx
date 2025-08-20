@@ -1,13 +1,41 @@
+// OrderSummary.jsx
 import { motion } from "framer-motion";
 import { useCartStore } from "../store/useCartStore";
 import { MoveRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
+import axios from "../lib/axios";
+
+const stripePromise = loadStripe(
+  "pk_test_51O6EjPSH6oSv6xfiuDBo7IH05zhuc5aXgEbqtz7Zi1N9hllUuH9czcGJBGivuESPQxJe0lPAOaC1yYQAQkAbm6cp00HlrTappz"
+);
+
 function OrderSummary() {
-  const { total, subtotal, coupon, isCouponApplied } = useCartStore();
+  const { total, subtotal, coupon, isCouponApplied, cart } = useCartStore();
   const savings = subtotal - total;
   const formattedSubtotal = subtotal.toFixed(2);
   const formattedTotal = total.toFixed(2);
   const formattedSavings = savings.toFixed(2);
+
+  const handlePayment = async () => {
+    const stripe = await stripePromise;
+    try {
+      const res = await axios.post("/payments/create-checkout-session", {
+        products: cart,
+        couponCode: coupon ? coupon.code : null, // Changed from 'coupon' to 'couponCode'
+      });
+      const session = res.data;
+      const result = await stripe.redirectToCheckout({
+        sessionId: session.id,
+      });
+      if (result.error) {
+        console.log(result.error.message);
+      }
+    } catch (error) {
+      console.error("Payment error:", error); // Log frontend errors
+      // You might want to show a user-friendly error message here
+    }
+  };
 
   return (
     <motion.div
@@ -58,7 +86,7 @@ function OrderSummary() {
           className="flex w-full items-center justify-center rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-amber-700 focus:outline-none focus:ring-4 focus:ring-amber-300"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          // onClick={handlePayment}
+          onClick={handlePayment}
         >
           Proceed to Checkout
         </motion.button>
