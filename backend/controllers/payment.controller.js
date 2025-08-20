@@ -87,7 +87,7 @@ export const checkout_success = async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status === "paid") {
-      // deactivate coupon if used
+      // Deactivate coupon if used (this logic is fine)
       if (session.metadata.couponCode) {
         await Coupon.findOneAndUpdate(
           {
@@ -98,25 +98,34 @@ export const checkout_success = async (req, res) => {
         );
       }
 
-      // create new order
+      // 💡 **REPLACEMENT LOGIC STARTS HERE**
+      // Use "Find-or-Create" (Upsert) logic for the order.
+      // This is now an idempotent operation.
       const products = JSON.parse(session.metadata.products);
-      const newOrder = new Order({
-        user: session.metadata.userId,
-        products: products.map((p) => ({
-          product: p.id,
-          quantity: p.quantity,
-          price: p.price,
-        })),
-        totalAmount: session.amount_total / 100,
-        stripeSessionId: sessionId,
-        customerEmail: session.customer_email, // optional save
-        billingDetails: session.customer_details || {}, // optional save
-      });
 
-      await newOrder.save();
+      await Order.findOneAndUpdate(
+        { stripeSessionId: sessionId }, // 1. The condition to find the document
+        {
+          // 2. The data to insert if the document is NOT found
+          $set: {
+            user: session.metadata.userId,
+            products: products.map((p) => ({
+              product: p.id,
+              quantity: p.quantity,
+              price: p.price,
+            })),
+            totalAmount: session.amount_total / 100,
+            stripeSessionId: sessionId,
+            customerEmail: session.customer_email,
+            billingDetails: session.customer_details || {},
+          },
+        },
+        { upsert: true } // 3. The key option: create the doc if it doesn't exist
+      );
+      // 💡 **REPLACEMENT LOGIC ENDS HERE**
     }
 
-    res.json({ success: true }); // ✅ don’t forget to respond!
+    res.json({ success: true });
   } catch (error) {
     console.log("checkout success error", error.message);
     res.status(500).json({

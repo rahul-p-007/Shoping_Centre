@@ -56,4 +56,58 @@ export const useUserStore = create((set, get) => ({
       );
     }
   },
+  refreshToken: async () => {
+    // prevent multiple simultaneous refresh requests
+    if (get().checkingAuth) return;
+    set({ checkingAuth: true });
+    try {
+      const response = await axios.post("/auth/refresh-token");
+      set({ checkingAuth: false });
+      return response.data;
+    } catch (error) {
+      set({ checkingAuth: false, user: null });
+      throw error;
+    }
+  },
 }));
+
+// Axios interceptors for token refresh
+let refreshPromise = null;
+
+axios.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Check for 401 error and ensure we don't retry indefinitely
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      // ✅ SET THE RETRY FLAG HERE TO PREVENT INFINITE LOOPS
+      originalRequest._retry = true;
+
+      try {
+        // if a refresh is already in progress, wait for it to complete
+        if (refreshPromise) {
+          await refreshPromise;
+          return axios(originalRequest);
+        }
+
+        // Start a new refresh request and store the promise
+        refreshPromise = useUserStore.getState().refreshToken();
+        await refreshPromise;
+
+        // Reset the promise after completion
+        refreshPromise = null;
+
+        // Retry the original request with the new token
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // If the refresh token fails, log out the user
+        useUserStore.getState().logout();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // For any other errors, just reject the promise
+    return Promise.reject(error);
+  }
+);
