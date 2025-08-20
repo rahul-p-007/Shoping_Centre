@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+
 const couponSchema = new mongoose.Schema(
   {
     code: {
       type: String,
       required: true,
-      unique: true,
+      unique: true, // ✅ coupon codes must be unique
     },
     discountPercentage: {
       type: Number,
@@ -23,13 +24,13 @@ const couponSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      unique: true,
+      required: true, // ✅ removed `unique: true`
     },
   },
   {
     timestamps: true,
   }
 );
+
 const Coupon = mongoose.model("Coupon", couponSchema);
 export default Coupon;

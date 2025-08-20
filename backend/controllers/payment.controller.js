@@ -69,7 +69,7 @@ export const createCheckoutSession = async (req, res) => {
       billing_address_collection: "required",
     });
 
-    if (totalAmount >= 20000) {
+    if (totalAmount >= 2000) {
       await createNewCoupon(req.user._id);
     }
     res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
@@ -134,10 +134,12 @@ async function createStripeCoupon(discountPercentage) {
   return coupon.id;
 }
 async function createNewCoupon(userId) {
+  await Coupon.findOneAndDelete({ userId: userId });
   const newCoupon = new Coupon({
     code: "GIFT" + Math.random().toString(36).substr(2, 9).toUpperCase(),
     discountPercentage: 10,
     expirationDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    userId: userId,
   });
   await newCoupon.save();
   return newCoupon;
