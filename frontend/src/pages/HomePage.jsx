@@ -1,4 +1,12 @@
 import CategoryItem from "../components/CategoryItem";
+import { motion } from "framer-motion";
+import SalesBanner from "../components/SalesBanner";
+import Slider from "../components/Slider";
+import Hero from "../components/Hero";
+import Features from "../components/Features";
+import Testimonials from "../components/Testimonials";
+import Newsletter from "../components/Newsletter";
+import PromoVideo from "../components/PromoVideo";
 
 const categories = [
   { href: "/jeans", name: "Jeans", imageUrl: "/jeans.avif" },
@@ -9,26 +17,18 @@ const categories = [
   { href: "/suits", name: "Suits", imageUrl: "/suits.avif" },
   { href: "/bags", name: "Bags", imageUrl: "/bags.avif" },
 ];
-import { motion } from "framer-motion";
-import SalesBanner from "../components/SalesBanner";
+
 function HomePage() {
   return (
     <>
-      <div className="relative min-h-screen text-white overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <h1 className="text-center text-5xl sm:text-6xl font-bold text-amber-700 mb-4 ">
-            Explore the Categ{" "}
-            <motion.span
-              className="text-7xl text-white font-bold"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              .
-            </motion.span>
-          </h1>
-          <p className="text-center text-xl text-black mb-12">
-            Discover the lastest trends and styles for men and women
+      <Hero />
+      <section id="categories" className="relative bg-white text-gray-900">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          <h2 className="text-center text-4xl font-bold text-gray-900 mb-3">
+            Explore Categories
+          </h2>
+          <p className="text-center text-lg text-gray-600 mb-10">
+            Discover the latest trends and styles for men and women.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {categories.map((category, i) => (
@@ -36,8 +36,15 @@ function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+      <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <Slider />
       </div>
       <SalesBanner />
+      <Features />
+      <PromoVideo />
+      <Testimonials />
+      <Newsletter />
     </>
   );
 }

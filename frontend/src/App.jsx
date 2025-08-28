@@ -13,6 +13,7 @@ import CartPage from "./pages/CartPage";
 import { useCartStore } from "./store/useCartStore";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
+import ExploreCategoriesPage from "./pages/ExploreCategoriesPage";
 function App() {
   const { user, checkAuth, checkingAuth } = useUserStore();
   const { getCartItems } = useCartStore();
@@ -43,6 +44,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/categories" element={<ExploreCategoriesPage />} />
             <Route
               path="/signup"
               element={!user ? <SignUpPage /> : <Navigate to="/" />}
